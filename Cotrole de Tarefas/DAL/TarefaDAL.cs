@@ -19,7 +19,7 @@ namespace DAL
                 cmd.CommandText = "SP_InserirTarefa";
 
                 SqlParameter pid = new SqlParameter("@Id", SqlDbType.Int);
-                pid.Value = _tarefa.Id;
+                pid.Value = IncrementoID();
                 cmd.Parameters.Add(pid);    
                 
                 SqlParameter pid_Usuario = new SqlParameter("@Id_Usuario", SqlDbType.Int);
@@ -52,6 +52,29 @@ namespace DAL
             {
                 cn.Close();
             }
+        }
+
+        private int IncrementoID()
+        {
+            SqlConnection cn = new SqlConnection();
+            try
+            {
+
+           
+            cn.ConnectionString = Conexao.StringDeConexao;
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = cn;
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "select isnull(max(id), 0) +1 from tarefa";
+                cn.Open();
+                return (int)cmd.ExecuteScalar();
+            }
+            finally
+        {
+
+             cn.Close();
+        }
+
         }
         public DataTable Buscar(string _filtro)
         {

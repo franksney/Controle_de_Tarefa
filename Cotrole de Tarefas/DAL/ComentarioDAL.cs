@@ -20,7 +20,7 @@ namespace DAL
 
                 cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int)
                 {
-                    Value = _comentario.Id
+                    Value = IncrementaID()
                 });
 
                 cmd.Parameters.Add(new SqlParameter("@id_Tarefa", SqlDbType.Int)
@@ -56,7 +56,30 @@ namespace DAL
                 cn.Close();
             }
         }
-            public DataTable Buscar(string _filtro)
+
+        private object IncrementaID()
+        {
+            SqlConnection cn = new SqlConnection();
+            try
+            {
+
+
+                cn.ConnectionString = Conexao.StringDeConexao;
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = cn;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "select isnull(max(id), 0) +1 from Comentario";
+                cn.Open();
+                return (int)cmd.ExecuteScalar();
+            }
+            finally
+            {
+
+                cn.Close();
+            }
+        }
+
+        public DataTable Buscar(int _filtro)
             {
                 SqlDataAdapter da = new SqlDataAdapter();
                 DataTable dt = new DataTable();
@@ -71,7 +94,7 @@ namespace DAL
                     da.SelectCommand.CommandText = "SP_BuscarComentario";
                     da.SelectCommand.CommandType = CommandType.StoredProcedure;
 
-                    SqlParameter pfiltro = new SqlParameter("@filtro", SqlDbType.VarChar);
+                    SqlParameter pfiltro = new SqlParameter("@Id", SqlDbType.Int);
                     pfiltro.Value = _filtro;
                     da.SelectCommand.Parameters.Add(pfiltro);
 
